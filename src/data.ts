@@ -180,3 +180,277 @@ export const STYLES: CardData[] = [
   { text: "辛辣に（きつめに）", ruby: "辛{しん}辣{らつ}に（きつめに）" },
   { text: "やさしく", ruby: "やさしく" }
 ];
+
+export interface QuizGenre {
+  id: string;
+  name: string;
+  ruby: string;
+  topics: CardData[];
+}
+
+export const QUIZ_GENRES: QuizGenre[] = [
+  {
+    id: "home-appliances",
+    name: "家電",
+    ruby: "家{か}電{でん}",
+    topics: [
+      { text: "テレビ", ruby: "テレビ" },
+      { text: "冷蔵庫", ruby: "冷{れい}蔵{ぞう}庫{こ}" },
+      { text: "掃除機", ruby: "掃{そう}除{じ}機{き}" },
+      { text: "洗濯機", ruby: "洗{せん}濯{たく}機{き}" },
+      { text: "電子レンジ", ruby: "電{電}子{し}レンジ" },
+      { text: "炊飯器", ruby: "炊{すい}飯{はん}器{き}" },
+      { text: "扇風機", ruby: "扇{せん}風{ぷう}機{き}" },
+      { text: "空気清浄機", ruby: "空{くう}気{き}清{せい}浄{じょう}機{き}" },
+      { text: "ドライヤー", ruby: "ドライヤー" },
+      { text: "エアコン", ruby: "エアコン" },
+      { text: "食洗機", ruby: "食{しょく}洗{せん}機{き}" },
+      { text: "トースター", ruby: "トースター" },
+      { text: "加湿器", ruby: "加{か}湿{しつ}器{き}" },
+      { text: "ロボット掃除機", ruby: "ロボット掃{そう}除{じ}機{き}" },
+      { text: "電気ケトル", ruby: "電{でん}気{き}ケトル" }
+    ]
+  },
+  {
+    id: "stationery",
+    name: "文房具",
+    ruby: "文{もん}房{ぼう}具{ぐ}",
+    topics: [
+      { text: "鉛筆", ruby: "鉛{えん}筆{ぴつ}" },
+      { text: "消しゴム", ruby: "消{け}しゴム" },
+      { text: "ハサミ", ruby: "ハサミ" },
+      { text: "のり", ruby: "のり" },
+      { text: "ホッチキス", ruby: "ホッチキス" },
+      { text: "シャープペンシル", ruby: "シャープペンシル" },
+      { text: "ボールペン", ruby: "ボールペン" },
+      { text: "定規", ruby: "定{じょう}規{ぎ}" },
+      { text: "ふせん", ruby: "ふせん" },
+      { text: "ノート", ruby: "ノート" },
+      { text: "カッターナイフ", ruby: "カッターナイフ" },
+      { text: "色鉛筆", ruby: "色{いろ}鉛{えん}筆{ぴつ}" },
+      { text: "修正テープ", ruby: "修{しゅう}正{せい}テープ" },
+      { text: "コンパス", ruby: "コンパス" },
+      { text: "クリップ", ruby: "クリップ" }
+    ]
+  },
+  {
+    id: "kitchen",
+    name: "キッチン用品",
+    ruby: "キッチン用{よう}品{ひん}",
+    topics: [
+      { text: "フライパン", ruby: "フライパン" },
+      { text: "鍋", ruby: "鍋{なべ}" },
+      { text: "包丁", ruby: "包{ほう}丁{ちょう}" },
+      { text: "まな板", ruby: "まな板{いた}" },
+      { text: "おたま", ruby: "おたま" },
+      { text: "フライ返し", ruby: "フライ返{かえ}し" },
+      { text: "ピーラー", ruby: "ピーラー" },
+      { text: "計量スプーン", ruby: "計{けい}量{りょう}スプーン" },
+      { text: "ざる", ruby: "ざる" },
+      { text: "泡立て器", ruby: "泡{あわ}立{だ}て器{き}" },
+      { text: "箸", ruby: "箸{はし}" },
+      { text: "スプーン", ruby: "スプーン" },
+      { text: "フォーク", ruby: "フォーク" },
+      { text: "お皿", ruby: "お皿{さら}" },
+      { text: "コップ", ruby: "コップ" }
+    ]
+  },
+  {
+    id: "food",
+    name: "食べ物",
+    ruby: "食{た}べ物{もの}",
+    topics: [
+      { text: "ラーメン", ruby: "ラーメン" },
+      { text: "カレーライス", ruby: "カレーライス" },
+      { text: "寿司", ruby: "寿司{すし}" },
+      { text: "ハンバーグ", ruby: "ハンバーグ" },
+      { text: "オムライス", ruby: "オムライス" },
+      { text: "ピザ", ruby: "ピザ" },
+      { text: "パスタ", ruby: "パスタ" },
+      { text: "サラダ", ruby: "サラダ" },
+      { text: "たこ焼き", ruby: "たこ焼{や}き" },
+      { text: "焼き鳥", ruby: "焼{や}き鳥{とり}" },
+      { text: "おにぎり", ruby: "おにぎり" },
+      { text: "食パン", ruby: "食{しょく}パン" },
+      { text: "うどん", ruby: "うどん" },
+      { text: "ステーキ", ruby: "ステーキ" },
+      { text: "餃子", ruby: "餃{ぎょう}子{ざ}" }
+    ]
+  },
+  {
+    id: "animals",
+    name: "動物",
+    ruby: "動{どう}物{ぶつ}",
+    topics: [
+      { text: "犬", ruby: "犬{いぬ}" },
+      { text: "猫", ruby: "猫{ねこ}" },
+      { text: "ライオン", ruby: "ライオン" },
+      { text: "ゾウ", ruby: "ゾウ" },
+      { text: "キリン", ruby: "キリン" },
+      { text: "パンダ", ruby: "パンダ" },
+      { text: "ペンギン", ruby: "ペンギン" },
+      { text: "ウサギ", ruby: "ウサギ" },
+      { text: "コアラ", ruby: "コアラ" },
+      { text: "サル", ruby: "サル" },
+      { text: "ゴリラ", ruby: "ゴリラ" },
+      { text: "トラ", ruby: "トラ" },
+      { text: "クマ", ruby: "クマ" },
+      { text: "カバ", ruby: "カバ" },
+      { text: "ハムスター", ruby: "ハムスター" }
+    ]
+  },
+  {
+    id: "sports",
+    name: "スポーツ",
+    ruby: "スポーツ",
+    topics: [
+      { text: "サッカー", ruby: "サッカー" },
+      { text: "野球", ruby: "野{や}球{きゅう}" },
+      { text: "バスケットボール", ruby: "バスケットボール" },
+      { text: "テニス", ruby: "テニス" },
+      { text: "水泳", ruby: "水{すい}泳{えい}" },
+      { text: "卓球", ruby: "卓{たっ}球{きゅう}" },
+      { text: "バレーボール", ruby: "バレーボール" },
+      { text: "バドミントン", ruby: "バドミントン" },
+      { text: "ドッジボール", ruby: "ドッジボール" },
+      { text: "陸上", ruby: "陸{りく}上{じょう}" },
+      { text: "体操", ruby: "体{たい}操{そう}" },
+      { text: "スキー", ruby: "スキー" },
+      { text: "スケート", ruby: "スケート" },
+      { text: "剣道", ruby: "剣{けん}道{どう}" },
+      { text: "柔道", ruby: "柔{じゅう}道{どう}" }
+    ]
+  },
+  {
+    id: "vehicles",
+    name: "乗り物",
+    ruby: "乗{の}り物{もの}",
+    topics: [
+      { text: "自転車", ruby: "自{じ}転{てん}車{しゃ}" },
+      { text: "自動車", ruby: "自{じ}動{どう}車{しゃ}" },
+      { text: "電車", ruby: "電{でん}車{しゃ}" },
+      { text: "新幹線", ruby: "新{しん}幹{かん}線{せん}" },
+      { text: "飛行機", ruby: "飛{ひ}行{こう}機{き}" },
+      { text: "ヘリコプター", ruby: "ヘリコプター" },
+      { text: "船", ruby: "船{ふね}" },
+      { text: "バス", ruby: "バス" },
+      { text: "トラック", ruby: "トラック" },
+      { text: "パトカー", ruby: "パトカー" },
+      { text: "消防車", ruby: "消{しょう}防{ぼう}車{しゃ}" },
+      { text: "救急車", ruby: "救{きゅう}急{きゅう}車{しゃ}" },
+      { text: "潜水艦", ruby: "潜{せん}水{すい}艦{かん}" },
+      { text: "ロケット", ruby: "ロケット" },
+      { text: "バイク", ruby: "バイク" }
+    ]
+  },
+  {
+    id: "instruments",
+    name: "楽器",
+    ruby: "楽{がっ}器{き}",
+    topics: [
+      { text: "ピアノ", ruby: "ピアノ" },
+      { text: "ギター", ruby: "ギター" },
+      { text: "ドラム", ruby: "ドラム" },
+      { text: "バイオリン", ruby: "バイオリン" },
+      { text: "トランペット", ruby: "トランペット" },
+      { text: "フルート", ruby: "フルート" },
+      { text: "ハーモニカ", ruby: "ハーモニカ" },
+      { text: "タンバリン", ruby: "タンバリン" },
+      { text: "カスタネット", ruby: "カスタネット" },
+      { text: "木琴", ruby: "木{もっ}琴{きん}" },
+      { text: "太鼓", ruby: "太{たい}鼓{こ}" },
+      { text: "オルガン", ruby: "オルガン" },
+      { text: "シンバル", ruby: "シンバル" },
+      { text: "リコーダー", ruby: "リコーダー" },
+      { text: "サックス", ruby: "サックス" }
+    ]
+  },
+  {
+    id: "clothing",
+    name: "身につけるもの",
+    ruby: "身{み}につけるもの",
+    topics: [
+      { text: "帽子", ruby: "帽{ぼう}子{し}" },
+      { text: "靴", ruby: "靴{くつ}" },
+      { text: "Tシャツ", ruby: "Tシャツ" },
+      { text: "靴下", ruby: "靴{くつ}下{した}" },
+      { text: "手袋", ruby: "手{て}袋{ぶくろ}" },
+      { text: "マフラー", ruby: "マフラー" },
+      { text: "メガネ", ruby: "メガネ" },
+      { text: "腕時計", ruby: "腕{うで}時{ど}計{けい}" },
+      { text: "マスク", ruby: "マスク" },
+      { text: "リュックサック", ruby: "リュックサック" },
+      { text: "傘", ruby: "傘{かさ}" },
+      { text: "パジャマ", ruby: "パジャマ" },
+      { text: "ズボン", ruby: "ズボン" },
+      { text: "指輪", ruby: "指{ゆび}輪{わ}" },
+      { text: "スカート", ruby: "スカート" }
+    ]
+  },
+  {
+    id: "creatures",
+    name: "虫・生き物",
+    ruby: "虫{むし}・生{い}き物{もの}",
+    topics: [
+      { text: "カブトムシ", ruby: "カブトムシ" },
+      { text: "クワガタ", ruby: "クワガタ" },
+      { text: "チョウ", ruby: "チョウ" },
+      { text: "セミ", ruby: "セミ" },
+      { text: "カマキリ", ruby: "カマキリ" },
+      { text: "アリ", ruby: "アリ" },
+      { text: "ハチ", ruby: "ハチ" },
+      { text: "カニ", ruby: "カニ" },
+      { text: "クラゲ", ruby: "クラゲ" },
+      { text: "タコ", ruby: "タコ" },
+      { text: "イカ", ruby: "イカ" },
+      { text: "カエル", ruby: "カエル" },
+      { text: "ザリガニ", ruby: "ザリガニ" },
+      { text: "カタツムリ", ruby: "カタツムリ" },
+      { text: "カメ", ruby: "カメ" }
+    ]
+  },
+  {
+    id: "nature",
+    name: "自然・天気",
+    ruby: "自{し}然{ぜん}・天{てん}気{き}",
+    topics: [
+      { text: "太陽", ruby: "太{たい}陽{よう}" },
+      { text: "月", ruby: "月{つき}" },
+      { text: "星", ruby: "星{ほし}" },
+      { text: "虹", ruby: "虹{にじ}" },
+      { text: "雲", ruby: "雲{くも}" },
+      { text: "雨", ruby: "雨{あめ}" },
+      { text: "雪", ruby: "雪{ゆき}" },
+      { text: "風", ruby: "風{かぜ}" },
+      { text: "海", ruby: "海{うみ}" },
+      { text: "山", ruby: "山{やま}" },
+      { text: "川", ruby: "川{かわ}" },
+      { text: "桜", ruby: "桜{さくら}" },
+      { text: "ひまわり", ruby: "ひまわり" },
+      { text: "雷", ruby: "雷{かみなり}" },
+      { text: "地震", ruby: "地{じ}震{しん}" }
+    ]
+  },
+  {
+    id: "toys-games",
+    name: "おもちゃ・遊び",
+    ruby: "おもちゃ・遊{あそ}び",
+    topics: [
+      { text: "トランプ", ruby: "トランプ" },
+      { text: "オセロ", ruby: "オセロ" },
+      { text: "ブロック", ruby: "ブロック" },
+      { text: "ぬいぐるみ", ruby: "ぬいぐるみ" },
+      { text: "ラジコン", ruby: "ラジコン" },
+      { text: "ゲーム機", ruby: "ゲーム機{き}" },
+      { text: "かるた", ruby: "かるた" },
+      { text: "パズル", ruby: "パズル" },
+      { text: "なわとび", ruby: "なわとび" },
+      { text: "けん玉", ruby: "けん玉{だま}" },
+      { text: "折り紙", ruby: "折{おり}紙{がみ}" },
+      { text: "シャボン玉", ruby: "シャボン玉{だま}" },
+      { text: "風船", ruby: "風{ふう}船{せん}" },
+      { text: "ヨーヨー", ruby: "ヨーヨー" },
+      { text: "積み木", ruby: "積{つ}み木{き}" }
+    ]
+  }
+];

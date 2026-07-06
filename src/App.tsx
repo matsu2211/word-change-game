@@ -21,9 +21,10 @@ import {
   Check,
   Layout,
   Music,
-  X
+  X,
+  Tag
 } from 'lucide-react';
-import { TOPICS, STYLES, ONOMATOPOEIA_TOPICS, ONOMATOPOEIA_CREATIVE_TOPICS, CardData } from './data';
+import { TOPICS, STYLES, ONOMATOPOEIA_TOPICS, ONOMATOPOEIA_CREATIVE_TOPICS, CardData, QUIZ_GENRES } from './data';
 import { GameMode, GamePhase, GameState } from './types';
 
 // --- Components ---
@@ -37,6 +38,7 @@ interface CardProps {
   showFurigana: boolean;
   styleSelectionEnabled?: boolean;
   onSelectStyle?: () => void;
+  genreName?: string;
   key?: string | number;
 }
 
@@ -48,7 +50,8 @@ const Card = ({
   onToggleHide, 
   showFurigana,
   styleSelectionEnabled,
-  onSelectStyle 
+  onSelectStyle,
+  genreName
 }: CardProps) => {
   const bgColor = color === 'blue' ? 'bg-blue-500' : 'bg-orange-500';
   const textColor = color === 'blue' ? 'text-blue-50' : 'text-orange-50';
@@ -119,6 +122,11 @@ const Card = ({
       <div className="flex-1 flex items-center justify-center w-full px-2">
         {isHidden ? (
           <div className="flex flex-col items-center gap-4">
+            {genreName && (
+              <span className="px-3 py-1.5 bg-white/20 text-white rounded-full text-xs font-black uppercase tracking-wider mb-2">
+                ジャンル：{genreName}
+              </span>
+            )}
             <span className="text-6xl font-black text-white/20">？？？</span>
             {onToggleHide && (
               <button 
@@ -132,6 +140,11 @@ const Card = ({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-6 w-full">
+            {genreName && (
+              <span className="px-3 py-1.5 bg-white/20 text-white rounded-full text-xs font-black uppercase tracking-wider -mt-4">
+                ジャンル：{genreName}
+              </span>
+            )}
             <div className={`font-extrabold text-white text-center w-full leading-[1.8] ${
               card?.text && card.text.length > 25 ? 'text-xl md:text-2xl' :
               card?.text && card.text.length > 15 ? 'text-2xl md:text-3xl' : 
@@ -217,7 +230,8 @@ export default function App() {
     isTimerEnabled: true,
     phase: 'idle',
     historyEnabled: true,
-    showFurigana: true
+    showFurigana: true,
+    quizGenre: 'all'
   });
   const [isTopicHidden, setIsTopicHidden] = useState(false);
   const [isTimerActive, setIsTimerActive] = useState(false);
@@ -232,10 +246,11 @@ export default function App() {
     if (!state.currentTopic) return;
     
     const topicText = state.currentTopic.text;
-    let textToCopy = `お題：${topicText}`;
+    const isGenreOnly = state.mode === 'genre-only';
+    let textToCopy = isGenreOnly ? `ジャンル：${topicText}` : `お題：${topicText}`;
     
-    if (state.mode === 'onomatopoeia') {
-      // Only copy the topic for onomatopoeia mode as requested
+    if (state.mode === 'onomatopoeia' || isGenreOnly) {
+      // Only copy the topic/genre for onomatopoeia and genre-only modes
     } else if (state.mode !== 'topic-only' && state.currentStyle) {
       textToCopy += `\n言い方：${state.currentStyle.text}`;
     }
@@ -247,14 +262,43 @@ export default function App() {
 
   const drawCards = useCallback(() => {
     const isOnomatopoeia = state.mode === 'onomatopoeia';
-    const currentTopics = isOnomatopoeia 
-      ? [...ONOMATOPOEIA_TOPICS, ...ONOMATOPOEIA_CREATIVE_TOPICS] 
-      : TOPICS;
+    const isGenreOnly = state.mode === 'genre-only';
     
-    let availableTopics = currentTopics.filter(t => !state.usedTopics.includes(t.text));
-    if (availableTopics.length === 0) {
-      availableTopics = currentTopics;
-      setState(prev => ({ ...prev, usedTopics: [] }));
+    let newTopic: CardData | null = null;
+
+    if (isGenreOnly) {
+      // ジャンルのみモードの場合：
+      // 選択されたジャンル、またはランダムなジャンルをお題カードのテキストにする
+      if (state.quizGenre && state.quizGenre !== 'all') {
+        const genre = QUIZ_GENRES.find(g => g.id === state.quizGenre);
+        if (genre) {
+          newTopic = { text: genre.name, ruby: genre.ruby };
+        }
+      }
+      
+      if (!newTopic) {
+        const randomGenre = QUIZ_GENRES[Math.floor(Math.random() * QUIZ_GENRES.length)];
+        newTopic = { text: randomGenre.name, ruby: randomGenre.ruby };
+      }
+    } else {
+      // 通常の抽選処理
+      let currentTopics = isOnomatopoeia 
+        ? [...ONOMATOPOEIA_TOPICS, ...ONOMATOPOEIA_CREATIVE_TOPICS] 
+        : TOPICS;
+      
+      if (state.mode === 'quiz' && state.quizGenre && state.quizGenre !== 'all') {
+        const selectedGenre = QUIZ_GENRES.find(g => g.id === state.quizGenre);
+        if (selectedGenre) {
+          currentTopics = selectedGenre.topics;
+        }
+      }
+      
+      let availableTopics = currentTopics.filter(t => !state.usedTopics.includes(t.text));
+      if (availableTopics.length === 0) {
+        availableTopics = currentTopics;
+        setState(prev => ({ ...prev, usedTopics: [] }));
+      }
+      newTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
     }
 
     let availableStyles = STYLES.filter(s => !state.usedStyles.includes(s.text));
@@ -263,10 +307,8 @@ export default function App() {
       setState(prev => ({ ...prev, usedStyles: [] }));
     }
 
-    const newTopic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
     let newStyle = null;
-
-    if (state.mode !== 'topic-only' && state.mode !== 'onomatopoeia') {
+    if (state.mode !== 'topic-only' && state.mode !== 'onomatopoeia' && state.mode !== 'genre-only') {
       newStyle = availableStyles[Math.floor(Math.random() * availableStyles.length)];
     }
 
@@ -274,7 +316,7 @@ export default function App() {
       ...prev,
       currentTopic: newTopic,
       currentStyle: newStyle,
-      usedTopics: prev.historyEnabled ? [...prev.usedTopics, newTopic.text] : [],
+      usedTopics: (prev.historyEnabled && !isGenreOnly && newTopic) ? [...prev.usedTopics, newTopic.text] : prev.usedTopics,
       usedStyles: (prev.historyEnabled && newStyle) ? [...prev.usedStyles, newStyle.text] : prev.usedStyles,
       phase: 'thinking'
     }));
@@ -282,7 +324,7 @@ export default function App() {
     setIsTopicHidden(state.mode === 'quiz');
     setIsTimerActive(state.isTimerEnabled);
     setTimerResetKey(prev => prev + 1);
-  }, [state.usedTopics, state.usedStyles, state.historyEnabled, state.mode, state.isTimerEnabled]);
+  }, [state.usedTopics, state.usedStyles, state.historyEnabled, state.mode, state.isTimerEnabled, state.quizGenre]);
 
   const selectStyle = (style: CardData) => {
     setState(prev => ({
@@ -361,7 +403,7 @@ export default function App() {
 
       <h2 className="text-3xl font-black text-slate-800 mb-12">モードを選んでね</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full max-w-7xl">
         <button 
           onClick={() => {
             setState(prev => ({ ...prev, mode: 'normal' }));
@@ -423,6 +465,22 @@ export default function App() {
           <div>
             <h3 className="text-2xl font-black text-slate-800">オノマトペ</h3>
             <p className="text-slate-500 font-medium mt-1">お題をオノマトペだけで表現して伝えよう！</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => {
+            setState(prev => ({ ...prev, mode: 'genre-only', quizGenre: 'all' }));
+            setView('game');
+          }}
+          className="group p-8 bg-white hover:bg-pink-50 rounded-3xl border-4 border-slate-100 hover:border-pink-400 transition-all text-left flex flex-col gap-4 card-shadow"
+        >
+          <div className="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Tag size={32} />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-slate-800">ジャンルのみ</h3>
+            <p className="text-slate-500 font-medium mt-1">お題の「ジャンル」だけを全員に見せて、具体的なお題を当てるよ！</p>
           </div>
         </button>
       </div>
@@ -541,10 +599,18 @@ export default function App() {
           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-1 ${
             state.mode === 'normal' ? 'bg-blue-100 text-blue-600' : 
             state.mode === 'quiz' ? 'bg-orange-100 text-orange-600' : 
+            state.mode === 'genre-only' ? 'bg-pink-100 text-pink-600' : 
             state.mode === 'onomatopoeia' ? 'bg-purple-100 text-purple-600' :
             'bg-emerald-100 text-emerald-600'
           }`}>
-            {state.mode === 'normal' ? '通常プレイ' : state.mode === 'quiz' ? '当てクイズ' : state.mode === 'onomatopoeia' ? 'オノマトペ' : 'お題のみ'}
+            {state.mode === 'normal' ? '通常プレイ' : 
+             state.mode === 'quiz' ? (
+               `当てクイズ${state.quizGenre && state.quizGenre !== 'all' ? `（${QUIZ_GENRES.find(g => g.id === state.quizGenre)?.name}）` : '（すべて）'}`
+             ) : 
+             state.mode === 'genre-only' ? (
+               `ジャンルのみ${state.quizGenre && state.quizGenre !== 'all' ? `（${QUIZ_GENRES.find(g => g.id === state.quizGenre)?.name}）` : '（すべて）'}`
+             ) : 
+             state.mode === 'onomatopoeia' ? 'オノマトペ' : 'お題のみ'}
           </span>
           <div className="font-bold text-slate-800 flex items-center gap-2">
             {state.phase === 'idle' ? '準備中' : 'プレイ中'}
@@ -565,6 +631,42 @@ export default function App() {
             </div>
             <h3 className="text-2xl font-black text-slate-800 mb-2">準備はいいかな？</h3>
             <p className="text-slate-500 font-medium mb-8">「カードを引く」ボタンを押してスタート！</p>
+            
+            {(state.mode === 'quiz' || state.mode === 'genre-only') && (
+              <div className="mb-8 max-w-md mx-auto">
+                <p className="font-extrabold text-slate-700 mb-3 text-sm">お題のジャンルを選択</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <button
+                    onClick={() => setState(prev => ({ ...prev, quizGenre: 'all' }))}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all border-2 cursor-pointer ${
+                      state.quizGenre === 'all'
+                        ? state.mode === 'quiz'
+                          ? 'bg-orange-500 text-white border-orange-600 card-shadow'
+                          : 'bg-pink-500 text-white border-pink-600 card-shadow'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    すべて{state.mode === 'genre-only' ? '（ジャンルお題全体）' : '（通常お題）'}
+                  </button>
+                  {QUIZ_GENRES.map(genre => (
+                    <button
+                      key={genre.id}
+                      onClick={() => setState(prev => ({ ...prev, quizGenre: genre.id }))}
+                      className={`px-4 py-2 rounded-xl font-bold text-sm transition-all border-2 cursor-pointer ${
+                        state.quizGenre === genre.id
+                          ? state.mode === 'quiz'
+                            ? 'bg-orange-500 text-white border-orange-600 card-shadow'
+                            : 'bg-pink-500 text-white border-pink-600 card-shadow'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      {genre.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button 
               onClick={drawCards}
               className="px-10 py-5 bg-emerald-500 text-white rounded-2xl font-black text-xl card-shadow border-b-4 border-emerald-700 hover:bg-emerald-600 transition-all active:scale-95"
@@ -606,14 +708,19 @@ export default function App() {
               <AnimatePresence mode="wait">
                 <Card 
                   key={`topic-${state.currentTopic?.text}`}
-                  title="お題" 
+                  title={state.mode === 'genre-only' ? "ジャンル" : "お題"} 
                   card={state.currentTopic} 
                   color="blue" 
                   isHidden={isTopicHidden}
                   onToggleHide={state.mode === 'quiz' ? () => setIsTopicHidden(!isTopicHidden) : undefined}
                   showFurigana={state.showFurigana}
+                  genreName={
+                    state.mode === 'quiz' && state.currentTopic 
+                      ? QUIZ_GENRES.find(g => g.topics.some(t => t.text === state.currentTopic?.text))?.name 
+                      : undefined
+                  }
                 />
-                {state.mode !== 'topic-only' && state.mode !== 'onomatopoeia' && (
+                 {state.mode !== 'topic-only' && state.mode !== 'onomatopoeia' && state.mode !== 'genre-only' && (
                   <Card 
                     key={`style-${state.currentStyle?.text}`}
                     title="言い方"
@@ -638,10 +745,18 @@ export default function App() {
               >
                 {allCopied ? <Check size={18} /> : <Copy size={18} />}
                 {allCopied 
-                  ? (state.mode === 'topic-only' || state.mode === 'onomatopoeia' ? 'お題をコピーしました' : '両方の内容をコピーしました') 
+                  ? (
+                    state.mode === 'genre-only' ? 'ジャンルをコピーしました' :
+                    state.mode === 'topic-only' || state.mode === 'onomatopoeia' ? 'お題をコピーしました' : 
+                    '両方の内容をコピーしました'
+                  ) 
                   : (
                     <div className="flex flex-col items-center">
-                      <span>{state.mode === 'topic-only' || state.mode === 'onomatopoeia' ? 'お題をコピー' : 'お題と言い方をまとめてコピー'}</span>
+                      <span>
+                        {state.mode === 'genre-only' ? 'ジャンルをコピー' :
+                         state.mode === 'topic-only' || state.mode === 'onomatopoeia' ? 'お題をコピー' : 
+                         'お題と言い方をまとめてコピー'}
+                      </span>
                       {state.mode === 'quiz' && <span className="text-[10px] opacity-70 font-medium">出題者にこっそり教えてね</span>}
                     </div>
                   )
